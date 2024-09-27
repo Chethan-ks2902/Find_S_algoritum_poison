@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find-S Algorithm Table</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        #hypothesis {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #4CAF50;
+            background-color: #e7f4e4;
+        }
+
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .delete-button:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Find-S Algorithm Example</h2>
+
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th>EXAMPLE</th>
+                <th>COLOR</th>
+                <th>TOUGHNESS</th>
+                <th>FUNGUS</th>
+                <th>APPEARANCE</th>
+                <th>POISONOUS</th>
+                <th>ACTION</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>GREEN</td>
+                <td>HARD</td>
+                <td>NO</td>
+                <td>WRINKLED</td>
+                <td>YES</td>
+                <td><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>GREEN</td>
+                <td>HARD</td>
+                <td>YES</td>
+                <td>SMOOTH</td>
+                <td>NO</td>
+                <td><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>BROWN</td>
+                <td>SOFT</td>
+                <td>NO</td>
+                <td>WRINKLED</td>
+                <td>NO</td>
+                <td><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>ORANGE</td>
+                <td>HARD</td>
+                <td>NO</td>
+                <td>WRINKLED</td>
+                <td>YES</td>
+                <td><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>GREEN</td>
+                <td>SOFT</td>
+                <td>YES</td>
+                <td>SMOOTH</td>
+                <td>YES</td>
+                <td><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>GREEN</td>
+                <td>HARD</td>
+                <td>YES</td>
+                <td>WRINKLED</td>
+                <td>YES</td>
+                <td><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>ORANGE</td>
+                <td>HARD</td>
+                <td>NO</td>
+                <td>WRINKLED</td>
+                <td>YES</td>
+                <td><button class="delete-button" onclick="deleteRow(this)">Delete</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br>
+
+    <button onclick="addRow()">Add Row</button>
+    <button onclick="findSHypothesis()">Find-S Hypothesis</button>
+
+    <div id="hypothesis">
+        <strong>Current Hypothesis:</strong> <span id="current-hypothesis">None</span>
+    </div>
+
+    <script>
+        function addRow() {
+            const table = document.getElementById("data-table").getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            
+            const cell1 = newRow.insertCell(0);
+            const cell2 = newRow.insertCell(1);
+            const cell3 = newRow.insertCell(2);
+            const cell4 = newRow.insertCell(3);
+            const cell5 = newRow.insertCell(4);
+            const cell6 = newRow.insertCell(5);
+            const cell7 = newRow.insertCell(6);
+
+            cell1.innerHTML = table.rows.length;
+            cell2.innerHTML = "<input type='text' placeholder='Color'>";
+            cell3.innerHTML = "<input type='text' placeholder='Toughness'>";
+            cell4.innerHTML = "<input type='text' placeholder='Fungus'>";
+            cell5.innerHTML = "<input type='text' placeholder='Appearance'>";
+            cell6.innerHTML = "<input type='text' placeholder='Poisonous'>";
+            cell7.innerHTML = "<button class='delete-button' onclick='deleteRow(this)'>Delete</button>";
+
+            // Automatically update hypothesis after adding the new row
+            findSHypothesis();
+        }
+
+        function deleteRow(button) {
+            const row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            
+            // Automatically update row numbers and hypothesis after deletion
+            updateRowNumbers();
+            findSHypothesis();
+        }
+
+        function updateRowNumbers() {
+            const table = document.getElementById("data-table").getElementsByTagName('tbody')[0];
+            const rows = table.getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                rows[i].cells[0].innerText = i + 1;
+            }
+        }
+
+        function findSHypothesis() {
+            const table = document.getElementById("data-table").getElementsByTagName('tbody')[0];
+            const rows = table.rows;
+            let hypothesis = ["?", "?", "?", "?", "?"];  // Initialize with most specific hypothesis
+
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName("td");
+                const poisonous = cells[5].children[0]?.value.trim().toUpperCase() || cells[5].textContent.trim().toUpperCase();
+
+                if (poisonous === "YES") {
+                    for (let j = 1; j <= 4; j++) {  // Compare attributes
+                        const value = cells[j].children[0]?.value.trim().toUpperCase() || cells[j].textContent.trim().toUpperCase();
+                        if (hypothesis[j - 1] === "?") {
+                            hypothesis[j - 1] = value;
+                        } else if (hypothesis[j - 1] !== value) {
+                            hypothesis[j - 1] = "?";
+                        }
+                    }
+                }
+            }
+
+            document.getElementById("current-hypothesis").textContent = hypothesis.join(", ");
+        }
+    </script>
+
+</body>
+</html>
